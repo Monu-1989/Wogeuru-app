@@ -272,3 +272,53 @@ String generateSEOTitle(String title) {
 String generateSEODescription(String description) {
   return '$description. Buy directly from verified local artisans on WOGEURU.';
 }
+void _submitProduct() {
+  if (_formKey.currentState!.validate()) {
+    if (_selectedCategory == null || _selectedSubCategory == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select category and subcategory')),
+      );
+      return;
+    }
+
+    if (_productImages.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please upload at least 1 image')),
+      );
+      return;
+    }
+
+    final Map<String, dynamic> productData = {
+      'title': _titleController.text.trim(),
+      'description': _descriptionController.text.trim(),
+      'price': _priceController.text.trim(),
+      'quantity': _quantityController.text.trim(),
+      'category': _selectedCategory,
+      'subcategory': _selectedSubCategory,
+      'tags': _selectedTags,
+      'seo_tags': _seoTagsController.text.trim(),
+      'seo_description': _seoDescriptionController.text.trim(),
+      'images': _productImages.map((img) => img.path).toList(),
+      'video': _productVideo?.path ?? '',
+    };
+
+    // Placeholder for backend API call or local DB save
+    print('Product Submitted:\n$productData');
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('🌸 Your creation is now ready to bloom on WOGEURU!'),
+        duration: Duration(seconds: 3),
+      ),
+    );
+
+    _formKey.currentState!.reset();
+    setState(() {
+      _selectedCategory = null;
+      _selectedSubCategory = null;
+      _selectedTags.clear();
+      _productImages.clear();
+      _productVideo = null;
+    });
+  }
+}
