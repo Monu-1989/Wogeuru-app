@@ -26,3 +26,21 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+import '../models/product_model.dart';
+
+List<Product> mockProducts = [
+  Product(
+    title: "Handcrafted Jutti",
+    description: "Made with love by artisans in Punjab.",
+    price: 799.0,
+    imageUrl: "https://i.imgur.com/8YwXc7W.png", // replace with your own later
+    tags: ["handmade", "eco-friendly"],
+  ),
+  Product(
+    title: "Eco Cotton Saree",
+    description: "Sustainable, soft cotton in earthy tones.",
+    price: 1299.0,
+    imageUrl: "https://i.imgur.com/z1w1i7w.png",
+    tags: ["eco-friendly"],
+  ),
+];
