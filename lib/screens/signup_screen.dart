@@ -1,4 +1,7 @@
+// 📄 lib/screens/signup_screen.dart
+
 import 'package:flutter/material.dart';
+import '../widgets/custom_button.dart';
 
 class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
@@ -7,36 +10,65 @@ class SignupScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Signup'),
+        title: const Text('Create Your WOGEURU Account'),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 1,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const TextField(
               decoration: InputDecoration(
-                labelText: 'Name',
+                labelText: 'Full Name',
               ),
             ),
             const SizedBox(height: 10),
             const TextField(
               decoration: InputDecoration(
-                labelText: 'Email',
+                labelText: 'Email Address',
+              ),
+            ),
+            const SizedBox(height: 10),
+            const TextField(
+              decoration: InputDecoration(
+                labelText: 'Phone Number',
               ),
             ),
             const SizedBox(height: 10),
             const TextField(
               obscureText: true,
               decoration: InputDecoration(
-                labelText: 'Password',
+                labelText: 'Create Password',
               ),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
+            const SizedBox(height: 10),
+            const TextField(
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'Confirm Password',
+              ),
+            ),
+            const SizedBox(height: 10),
+            const TextField(
+              decoration: InputDecoration(
+                labelText: 'Gender (Optional)',
+              ),
+            ),
+            const SizedBox(height: 10),
+            const TextField(
+              decoration: InputDecoration(
+                labelText: 'Date of Birth (Optional)',
+              ),
+            ),
+            const SizedBox(height: 25),
+            CustomButton(
+              label: 'Let’s Begin the Journey 💫',
               onPressed: () {
-                // Handle signup logic
+                // Handle sign up logic
               },
-              child: const Text('Sign Up'),
             ),
           ],
         ),
