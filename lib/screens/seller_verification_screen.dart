@@ -147,3 +147,51 @@ class _SellerVerificationScreenState extends State<SellerVerificationScreen> {
     );
   }
 }
+  Future<void> _pickImage(ImageSource source, bool isSelfie) async {
+    final pickedFile = await _picker.pickImage(source: source, imageQuality: 75);
+    if (pickedFile != null) {
+      setState(() {
+        if (isSelfie) {
+          selfieImage = File(pickedFile.path);
+        } else {
+          aadhaarImage = File(pickedFile.path);
+        }
+      });
+    }
+  }
+
+  Future<void> _pickGSTDocument() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 75);
+    if (pickedFile != null) {
+      setState(() {
+        gstDocImage = File(pickedFile.path);
+      });
+    }
+  }
+
+  void _submitVerification() {
+    // Basic validation logic
+    if (_aadhaarController.text.isEmpty || selfieImage == null || aadhaarImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please upload Aadhaar and a selfie')),
+      );
+      return;
+    }
+
+    if (_selectedLevel == VerificationLevel.level2) {
+      if (_gstController.text.isEmpty || _panController.text.isEmpty || _shopLicenseController.text.isEmpty || gstDocImage == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please complete all GST details')),
+        );
+        return;
+      }
+    }
+
+    // Proceed to submit data (e.g., API call or local DB)
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Verification submitted!')),
+    );
+
+    // After successful submit, you might navigate:
+    // Navigator.pushReplacementNamed(context, '/home');
+  }
