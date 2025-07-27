@@ -195,3 +195,139 @@ class _SellerVerificationScreenState extends State<SellerVerificationScreen> {
     // After successful submit, you might navigate:
     // Navigator.pushReplacementNamed(context, '/home');
   }
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      iconTheme: IconThemeData(color: Colors.black),
+      title: Text(
+        'Seller Verification',
+        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+      ),
+    ),
+    body: SingleChildScrollView(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Verification Type Toggle
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Select Verification Type', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+              DropdownButton<String>(
+                value: _verificationType,
+                items: ['Level 1 - Basic', 'Level 2 - GST']
+                    .map((type) => DropdownMenuItem(value: type, child: Text(type)))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _verificationType = value!;
+                  });
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+
+          // Aadhaar Field
+          TextFormField(
+            controller: _aadhaarController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(labelText: 'Aadhaar Number'),
+          ),
+
+          const SizedBox(height: 15),
+
+          // PAN (for Level 2)
+          if (_verificationType == 'Level 2 - GST')
+            TextFormField(
+              controller: _panController,
+              decoration: InputDecoration(labelText: 'PAN Number'),
+            ),
+
+          const SizedBox(height: 15),
+
+          // GSTIN Field
+          if (_verificationType == 'Level 2 - GST')
+            TextFormField(
+              controller: _gstController,
+              decoration: InputDecoration(labelText: 'GSTIN'),
+            ),
+
+          const SizedBox(height: 15),
+
+          // Address Field
+          TextFormField(
+            controller: _addressController,
+            decoration: InputDecoration(labelText: 'Address'),
+            maxLines: 2,
+          ),
+
+          const SizedBox(height: 15),
+
+          // Selfie Upload
+          GestureDetector(
+            onTap: () => _pickImage(true),
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.camera_alt, color: Colors.grey),
+                  const SizedBox(width: 10),
+                  Text(_selfie == null ? 'Upload Selfie' : 'Selfie Uploaded'),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 15),
+
+          // GST Doc Upload (for Level 2)
+          if (_verificationType == 'Level 2 - GST')
+            GestureDetector(
+              onTap: _pickGSTDocument,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.upload_file, color: Colors.grey),
+                    const SizedBox(width: 10),
+                    Text(_gstDoc == null ? 'Upload GST Document' : 'GST Document Selected'),
+                  ],
+                ),
+              ),
+            ),
+
+          const SizedBox(height: 30),
+
+          // Submit Button (emotional label)
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF800000), // Maroon color
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+              onPressed: _submitVerification,
+              child: Text(
+                'Let’s do it together',
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
