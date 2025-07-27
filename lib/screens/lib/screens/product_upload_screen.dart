@@ -100,3 +100,133 @@ class _ProductUploadScreenState extends State<ProductUploadScreen> {
     );
   }
 }
+import 'package:flutter/material.dart';
+
+class ProductUploadScreen extends StatefulWidget {
+  @override
+  _ProductUploadScreenState createState() => _ProductUploadScreenState();
+}
+
+class _ProductUploadScreenState extends State<ProductUploadScreen> {
+  final _formKey = GlobalKey<FormState>();
+
+  String? selectedCategory;
+  String? selectedSubcategory;
+
+  final List<String> categories = ['Shoes', 'Clothing', 'Bags'];
+  final Map<String, List<String>> subcategories = {
+    'Shoes': ['Sandals', 'High Heels', 'Loafers'],
+    'Clothing': ['Sarees', 'Kurtis', 'Punjabi Suits'],
+    'Bags': ['Handmade Bags', 'Jute Bags', 'Laptop Bags'],
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Upload Product'),
+        backgroundColor: Colors.deepPurple.shade800,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: [
+              // Title
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Product Title'),
+                validator: (value) =>
+                    value!.isEmpty ? 'Please enter a product title' : null,
+              ),
+
+              // Description
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Description'),
+                maxLines: 3,
+                validator: (value) =>
+                    value!.isEmpty ? 'Please enter description' : null,
+              ),
+
+              // Price
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Price (₹)'),
+                keyboardType: TextInputType.number,
+                validator: (value) =>
+                    value!.isEmpty ? 'Enter product price' : null,
+              ),
+
+              // Quantity
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Quantity'),
+                keyboardType: TextInputType.number,
+                validator: (value) =>
+                    value!.isEmpty ? 'Enter quantity available' : null,
+              ),
+
+              SizedBox(height: 20),
+
+              // Category Dropdown
+              DropdownButtonFormField<String>(
+                decoration: InputDecoration(labelText: 'Category'),
+                value: selectedCategory,
+                onChanged: (value) {
+                  setState(() {
+                    selectedCategory = value;
+                    selectedSubcategory = null;
+                  });
+                },
+                items: categories.map((category) {
+                  return DropdownMenuItem(
+                    value: category,
+                    child: Text(category),
+                  );
+                }).toList(),
+                validator: (value) =>
+                    value == null ? 'Please select a category' : null,
+              ),
+
+              // Subcategory Dropdown
+              if (selectedCategory != null)
+                DropdownButtonFormField<String>(
+                  decoration: InputDecoration(labelText: 'Subcategory'),
+                  value: selectedSubcategory,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedSubcategory = value;
+                    });
+                  },
+                  items: subcategories[selectedCategory]!
+                      .map((sub) => DropdownMenuItem(
+                            value: sub,
+                            child: Text(sub),
+                          ))
+                      .toList(),
+                  validator: (value) =>
+                      value == null ? 'Please select a subcategory' : null,
+                ),
+
+              SizedBox(height: 30),
+
+              // Submit Button
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    // To be added: Image upload + SEO preview logic
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Uploading product...')),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple.shade800,
+                ),
+                child: Text('Add to my joy ✨'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
