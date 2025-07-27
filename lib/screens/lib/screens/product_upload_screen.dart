@@ -322,3 +322,55 @@ void _submitProduct() {
     });
   }
 }
+void _submitProduct() {
+  // Basic field validations
+  if (_titleController.text.isEmpty ||
+      _descriptionController.text.isEmpty ||
+      _priceController.text.isEmpty ||
+      _quantityController.text.isEmpty ||
+      selectedCategory == null ||
+      selectedSubCategory == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Please fill all required fields")),
+    );
+    return;
+  }
+
+  // At least 1 image required
+  if (_imageFiles.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Please upload at least one product image")),
+    );
+    return;
+  }
+
+  // Simulate backend save (you can replace this with real API later)
+  print("📦 Uploading Product...");
+  print("Title: ${_titleController.text}");
+  print("Description: ${_descriptionController.text}");
+  print("Price: ₹${_priceController.text}");
+  print("Quantity: ${_quantityController.text}");
+  print("Category: $selectedCategory");
+  print("Subcategory: $selectedSubCategory");
+  print("Tags: $_selectedTags");
+  print("Images: ${_imageFiles.length}");
+  print("Video: ${_videoFile != null ? 'Yes' : 'No'}");
+
+  // Show success feedback
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text("Your product has been submitted 🎉")),
+  );
+
+  // Clear form (optional)
+  _titleController.clear();
+  _descriptionController.clear();
+  _priceController.clear();
+  _quantityController.clear();
+  setState(() {
+    selectedCategory = null;
+    selectedSubCategory = null;
+    _selectedTags.clear();
+    _imageFiles.clear();
+    _videoFile = null;
+  });
+}
