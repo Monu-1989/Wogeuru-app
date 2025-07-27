@@ -230,3 +230,45 @@ class _ProductUploadScreenState extends State<ProductUploadScreen> {
     );
   }
 }
+// IMAGE & VIDEO PICKING IMPORTS (top of file if not already)
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+
+// INSIDE _ProductUploadScreenState:
+List<XFile> _productImages = [];
+XFile? _productVideo;
+final ImagePicker _picker = ImagePicker();
+
+Future<void> _pickImages() async {
+  final List<XFile>? images = await _picker.pickMultiImage();
+  if (images != null && images.length <= 6) {
+    setState(() {
+      _productImages = images;
+    });
+  }
+}
+
+Future<void> _pickVideo() async {
+  final XFile? video = await _picker.pickVideo(
+    source: ImageSource.gallery,
+    maxDuration: const Duration(seconds: 30),
+  );
+  if (video != null) {
+    setState(() {
+      _productVideo = video;
+    });
+  }
+}
+
+// SEO Tags Controller
+final TextEditingController _seoTagsController = TextEditingController();
+final TextEditingController _seoDescriptionController = TextEditingController();
+
+// GOOGLE PREVIEW AUTO FUNCTION
+String generateSEOTitle(String title) {
+  return '$title - Handcrafted Products Near You';
+}
+
+String generateSEODescription(String description) {
+  return '$description. Buy directly from verified local artisans on WOGEURU.';
+}
