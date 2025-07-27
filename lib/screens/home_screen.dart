@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("WOGEURU Seller"),
+        title: const Text('WOGEURU'),
       ),
-      body: const Center(
-        child: Text(
-          'Welcome to your Seller Dashboard!',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Icon(Icons.check_circle, size: 80, color: Colors.green),
+            SizedBox(height: 20),
+            Text(
+              'Welcome to WOGEURU Seller App!',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );
