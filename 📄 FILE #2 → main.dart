@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wogeuru_app/screens/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,28 +11,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'WOGEURU Seller',
+      debugShowCheckedModeBanner: false,
+      title: 'WOGEURU App',
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: const SplashScreen(),
-    );
-  }
-}
-
-class SplashScreen extends StatelessWidget {
-  const SplashScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text(
-          'Welcome to WOGEURU Seller App',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-      ),
     );
   }
 }
