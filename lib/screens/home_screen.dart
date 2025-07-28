@@ -27,11 +27,11 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Product Image
-              if (product.imageUrls.isNotEmpty)
+              if (product.imageUrl.isNotEmpty)
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.network(
-                    product.imageUrls.first,
+                    product.imageUrl.first,
                     height: 200,
                     width: double.infinity,
                     fit: BoxFit.cover,
