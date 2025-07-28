@@ -262,11 +262,11 @@ class _ProductUploadScreenState extends State<ProductUploadScreen> {
 
               // SUBMIT BUTTON
               ElevatedButton(
-                onPressed: _submitProduct,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple.shade800,
-                ),
-                child: const Text('💖 Add This to My Joy'),
+  onPressed: _submitProduct,
+  child: Text("Bring it to life"),
+    style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple.shade800            
+)
               ),
             ],
           ),
