@@ -107,3 +107,31 @@ class ProductDetailScreen extends StatelessWidget {
     );
   }
 }
+import 'package:flutter/material.dart';
+
+class ProductDetailScreen extends StatelessWidget {
+  final String productId;
+
+  const ProductDetailScreen({super.key, required this.productId});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text(
+          'Product Details',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.deepPurple, // You can use maroon here if preferred
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: const Center(
+        child: Text(
+          'Loading product details...',
+          style: TextStyle(fontSize: 16),
+        ),
+      ),
+    );
+  }
+}
