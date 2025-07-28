@@ -1,106 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-
-class ProductUploadScreen extends StatefulWidget {
-  @override
-  _ProductUploadScreenState createState() => _ProductUploadScreenState();
-}
-
-class _ProductUploadScreenState extends State<ProductUploadScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final picker = ImagePicker();
-
-  String? _title, _description, _price, _quantity;
-  List<File> _images = [];
-
-  Future<void> _pickImage() async {
-    final picked = await picker.pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      setState(() {
-        _images.add(File(picked.path));
-      });
-    }
-  }
-
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      // For now, just print values
-      print("Title: $_title");
-      print("Description: $_description");
-      print("Price: $_price");
-      print("Quantity: $_quantity");
-      print("Images: ${_images.length}");
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Bring it to life'),
-        backgroundColor: Colors.deepPurple,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Product Title'),
-                onSaved: (value) => _title = value,
-                validator: (value) =>
-                    value!.isEmpty ? 'Please enter product title' : null,
-              ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Description'),
-                onSaved: (value) => _description = value,
-                validator: (value) =>
-                    value!.isEmpty ? 'Please enter product description' : null,
-              ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Price (₹)'),
-                keyboardType: TextInputType.number,
-                onSaved: (value) => _price = value,
-                validator: (value) =>
-                    value!.isEmpty ? 'Enter price' : null,
-              ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Quantity'),
-                keyboardType: TextInputType.number,
-                onSaved: (value) => _quantity = value,
-                validator: (value) =>
-                    value!.isEmpty ? 'Enter quantity' : null,
-              ),
-              SizedBox(height: 10),
-              Text('Upload Images (max 6):'),
-              Wrap(
-                spacing: 10,
-                children: [
-                  for (var img in _images)
-                    Image.file(img, width: 80, height: 80, fit: BoxFit.cover),
-                  if (_images.length < 6)
-                    IconButton(
-                      icon: Icon(Icons.add_a_photo),
-                      onPressed: _pickImage,
-                    ),
-                ],
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _submitForm,
-                child: Text("Bring it to life"),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-import 'package:flutter/material.dart';
 
 class ProductUploadScreen extends StatefulWidget {
   @override
@@ -110,21 +10,113 @@ class ProductUploadScreen extends StatefulWidget {
 class _ProductUploadScreenState extends State<ProductUploadScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  String? selectedCategory;
-  String? selectedSubcategory;
+  // Form Controllers
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _quantityController = TextEditingController();
+  final TextEditingController _seoTagsController = TextEditingController();
+  final TextEditingController _seoDescriptionController = TextEditingController();
 
-  final List<String> categories = ['Shoes', 'Clothing', 'Bags'];
-  final Map<String, List<String>> subcategories = {
+  // Category + Subcategory
+  String? _selectedCategory;
+  String? _selectedSubCategory;
+
+  final List<String> _categories = ['Shoes', 'Clothing', 'Bags'];
+  final Map<String, List<String>> _subCategories = {
     'Shoes': ['Sandals', 'High Heels', 'Loafers'],
     'Clothing': ['Sarees', 'Kurtis', 'Punjabi Suits'],
     'Bags': ['Handmade Bags', 'Jute Bags', 'Laptop Bags'],
   };
 
+  // Tags
+  List<String> _selectedTags = [];
+
+  // Images & Video
+  final ImagePicker _picker = ImagePicker();
+  List<XFile> _productImages = [];
+  XFile? _productVideo;
+
+  Future<void> _pickImages() async {
+    final images = await _picker.pickMultiImage();
+    if (images != null && images.length <= 6) {
+      setState(() => _productImages = images);
+    }
+  }
+
+  Future<void> _pickVideo() async {
+    final video = await _picker.pickVideo(
+      source: ImageSource.gallery,
+      maxDuration: const Duration(seconds: 30),
+    );
+    if (video != null) {
+      setState(() => _productVideo = video);
+    }
+  }
+
+  String generateSEOTitle(String title) {
+    return '$title - Handcrafted Products Near You';
+  }
+
+  String generateSEODescription(String description) {
+    return '$description. Buy directly from verified local artisans on WOGEURU.';
+  }
+
+  void _submitProduct() {
+    if (_formKey.currentState!.validate()) {
+      if (_selectedCategory == null || _selectedSubCategory == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please select category and subcategory')),
+        );
+        return;
+      }
+
+      if (_productImages.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please upload at least 1 image')),
+        );
+        return;
+      }
+
+      final productData = {
+        'title': _titleController.text.trim(),
+        'description': _descriptionController.text.trim(),
+        'price': _priceController.text.trim(),
+        'quantity': _quantityController.text.trim(),
+        'category': _selectedCategory,
+        'subcategory': _selectedSubCategory,
+        'tags': _selectedTags,
+        'seo_tags': _seoTagsController.text.trim(),
+        'seo_description': _seoDescriptionController.text.trim(),
+        'images': _productImages.map((img) => img.path).toList(),
+        'video': _productVideo?.path ?? '',
+      };
+
+      print("Product Submitted:\n$productData");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('🌸 Your creation is now ready to bloom on WOGEURU!'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+
+      _formKey.currentState!.reset();
+      setState(() {
+        _selectedCategory = null;
+        _selectedSubCategory = null;
+        _selectedTags.clear();
+        _productImages.clear();
+        _productVideo = null;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Upload Product'),
+        title: const Text('Bring it to life'),
         backgroundColor: Colors.deepPurple.shade800,
       ),
       body: Padding(
@@ -135,14 +127,16 @@ class _ProductUploadScreenState extends State<ProductUploadScreen> {
             children: [
               // Title
               TextFormField(
-                decoration: InputDecoration(labelText: 'Product Title'),
+                controller: _titleController,
+                decoration: const InputDecoration(labelText: 'Product Title'),
                 validator: (value) =>
                     value!.isEmpty ? 'Please enter a product title' : null,
               ),
 
               // Description
               TextFormField(
-                decoration: InputDecoration(labelText: 'Description'),
+                controller: _descriptionController,
+                decoration: const InputDecoration(labelText: 'Description'),
                 maxLines: 3,
                 validator: (value) =>
                     value!.isEmpty ? 'Please enter description' : null,
@@ -150,7 +144,8 @@ class _ProductUploadScreenState extends State<ProductUploadScreen> {
 
               // Price
               TextFormField(
-                decoration: InputDecoration(labelText: 'Price (₹)'),
+                controller: _priceController,
+                decoration: const InputDecoration(labelText: 'Price (₹)'),
                 keyboardType: TextInputType.number,
                 validator: (value) =>
                     value!.isEmpty ? 'Enter product price' : null,
@@ -158,70 +153,120 @@ class _ProductUploadScreenState extends State<ProductUploadScreen> {
 
               // Quantity
               TextFormField(
-                decoration: InputDecoration(labelText: 'Quantity'),
+                controller: _quantityController,
+                decoration: const InputDecoration(labelText: 'Quantity'),
                 keyboardType: TextInputType.number,
                 validator: (value) =>
                     value!.isEmpty ? 'Enter quantity available' : null,
               ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-              // Category Dropdown
+              // Category
               DropdownButtonFormField<String>(
-                decoration: InputDecoration(labelText: 'Category'),
-                value: selectedCategory,
+                decoration: const InputDecoration(labelText: 'Category'),
+                value: _selectedCategory,
                 onChanged: (value) {
                   setState(() {
-                    selectedCategory = value;
-                    selectedSubcategory = null;
+                    _selectedCategory = value;
+                    _selectedSubCategory = null;
                   });
                 },
-                items: categories.map((category) {
-                  return DropdownMenuItem(
-                    value: category,
-                    child: Text(category),
-                  );
+                items: _categories.map((cat) {
+                  return DropdownMenuItem(value: cat, child: Text(cat));
                 }).toList(),
                 validator: (value) =>
                     value == null ? 'Please select a category' : null,
               ),
 
-              // Subcategory Dropdown
-              if (selectedCategory != null)
+              // Subcategory
+              if (_selectedCategory != null)
                 DropdownButtonFormField<String>(
-                  decoration: InputDecoration(labelText: 'Subcategory'),
-                  value: selectedSubcategory,
+                  decoration: const InputDecoration(labelText: 'Subcategory'),
+                  value: _selectedSubCategory,
                   onChanged: (value) {
-                    setState(() {
-                      selectedSubcategory = value;
-                    });
+                    setState(() => _selectedSubCategory = value);
                   },
-                  items: subcategories[selectedCategory]!
-                      .map((sub) => DropdownMenuItem(
-                            value: sub,
-                            child: Text(sub),
-                          ))
+                  items: _subCategories[_selectedCategory]!
+                      .map((sub) =>
+                          DropdownMenuItem(value: sub, child: Text(sub)))
                       .toList(),
                   validator: (value) =>
                       value == null ? 'Please select a subcategory' : null,
                 ),
 
-              SizedBox(height: 30),
+              const SizedBox(height: 20),
 
-              // Submit Button
+              // IMAGE PICKER SECTION
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Upload up to 6 images:'),
+                  ElevatedButton(
+                    onPressed: _pickImages,
+                    child: const Text('Pick Product Images'),
+                  ),
+                  Wrap(
+                    spacing: 8,
+                    children: _productImages
+                        .map((img) => Image.file(File(img.path),
+                            width: 80, height: 80, fit: BoxFit.cover))
+                        .toList(),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text('Optional: Upload a video (under 30 sec):'),
+                  ElevatedButton(
+                    onPressed: _pickVideo,
+                    child: const Text('Pick Product Video'),
+                  ),
+                  if (_productVideo != null)
+                    Text('Video selected: ${_productVideo!.name}'),
+                ],
+              ),
+
+              const SizedBox(height: 20),
+
+              // SEO Tags
+              TextFormField(
+                controller: _seoTagsController,
+                decoration: const InputDecoration(
+                    labelText: 'SEO Micro-Tags (comma-separated)'),
+              ),
+              TextFormField(
+                controller: _seoDescriptionController,
+                decoration: const InputDecoration(
+                    labelText: 'Meta Description for SEO'),
+              ),
+
+              const SizedBox(height: 20),
+
+              // GOOGLE PREVIEW
+              const Text(
+                '🔍 Google Result Preview:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                generateSEOTitle(_titleController.text),
+                style: const TextStyle(fontSize: 16, color: Colors.black87),
+              ),
+              Text(
+                'wogeuru.com/${_selectedCategory?.toLowerCase()}/${_selectedSubCategory?.toLowerCase()}/${_titleController.text.toLowerCase().replaceAll(' ', '-')}\n',
+                style: const TextStyle(color: Colors.blue),
+              ),
+              Text(
+                generateSEODescription(_seoDescriptionController.text),
+                style: const TextStyle(color: Colors.black54),
+              ),
+
+              const SizedBox(height: 30),
+
+              // SUBMIT BUTTON
               ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    // To be added: Image upload + SEO preview logic
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Uploading product...')),
-                    );
-                  }
-                },
+                onPressed: _submitProduct,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepPurple.shade800,
                 ),
-                child: Text('Add to my joy ✨'),
+                child: const Text('💖 Add This to My Joy'),
               ),
             ],
           ),
@@ -229,148 +274,4 @@ class _ProductUploadScreenState extends State<ProductUploadScreen> {
       ),
     );
   }
-}
-// IMAGE & VIDEO PICKING IMPORTS (top of file if not already)
-import 'dart:io';
-import 'package:image_picker/image_picker.dart';
-
-// INSIDE _ProductUploadScreenState:
-List<XFile> _productImages = [];
-XFile? _productVideo;
-final ImagePicker _picker = ImagePicker();
-
-Future<void> _pickImages() async {
-  final List<XFile>? images = await _picker.pickMultiImage();
-  if (images != null && images.length <= 6) {
-    setState(() {
-      _productImages = images;
-    });
-  }
-}
-
-Future<void> _pickVideo() async {
-  final XFile? video = await _picker.pickVideo(
-    source: ImageSource.gallery,
-    maxDuration: const Duration(seconds: 30),
-  );
-  if (video != null) {
-    setState(() {
-      _productVideo = video;
-    });
-  }
-}
-
-// SEO Tags Controller
-final TextEditingController _seoTagsController = TextEditingController();
-final TextEditingController _seoDescriptionController = TextEditingController();
-
-// GOOGLE PREVIEW AUTO FUNCTION
-String generateSEOTitle(String title) {
-  return '$title - Handcrafted Products Near You';
-}
-
-String generateSEODescription(String description) {
-  return '$description. Buy directly from verified local artisans on WOGEURU.';
-}
-void _submitProduct() {
-  if (_formKey.currentState!.validate()) {
-    if (_selectedCategory == null || _selectedSubCategory == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select category and subcategory')),
-      );
-      return;
-    }
-
-    if (_productImages.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please upload at least 1 image')),
-      );
-      return;
-    }
-
-    final Map<String, dynamic> productData = {
-      'title': _titleController.text.trim(),
-      'description': _descriptionController.text.trim(),
-      'price': _priceController.text.trim(),
-      'quantity': _quantityController.text.trim(),
-      'category': _selectedCategory,
-      'subcategory': _selectedSubCategory,
-      'tags': _selectedTags,
-      'seo_tags': _seoTagsController.text.trim(),
-      'seo_description': _seoDescriptionController.text.trim(),
-      'images': _productImages.map((img) => img.path).toList(),
-      'video': _productVideo?.path ?? '',
-    };
-
-    // Placeholder for backend API call or local DB save
-    print('Product Submitted:\n$productData');
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('🌸 Your creation is now ready to bloom on WOGEURU!'),
-        duration: Duration(seconds: 3),
-      ),
-    );
-
-    _formKey.currentState!.reset();
-    setState(() {
-      _selectedCategory = null;
-      _selectedSubCategory = null;
-      _selectedTags.clear();
-      _productImages.clear();
-      _productVideo = null;
-    });
-  }
-}
-void _submitProduct() {
-  // Basic field validations
-  if (_titleController.text.isEmpty ||
-      _descriptionController.text.isEmpty ||
-      _priceController.text.isEmpty ||
-      _quantityController.text.isEmpty ||
-      selectedCategory == null ||
-      selectedSubCategory == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Please fill all required fields")),
-    );
-    return;
-  }
-
-  // At least 1 image required
-  if (_imageFiles.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Please upload at least one product image")),
-    );
-    return;
-  }
-
-  // Simulate backend save (you can replace this with real API later)
-  print("📦 Uploading Product...");
-  print("Title: ${_titleController.text}");
-  print("Description: ${_descriptionController.text}");
-  print("Price: ₹${_priceController.text}");
-  print("Quantity: ${_quantityController.text}");
-  print("Category: $selectedCategory");
-  print("Subcategory: $selectedSubCategory");
-  print("Tags: $_selectedTags");
-  print("Images: ${_imageFiles.length}");
-  print("Video: ${_videoFile != null ? 'Yes' : 'No'}");
-
-  // Show success feedback
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text("Your product has been submitted 🎉")),
-  );
-
-  // Clear form (optional)
-  _titleController.clear();
-  _descriptionController.clear();
-  _priceController.clear();
-  _quantityController.clear();
-  setState(() {
-    selectedCategory = null;
-    selectedSubCategory = null;
-    _selectedTags.clear();
-    _imageFiles.clear();
-    _videoFile = null;
-  });
 }
