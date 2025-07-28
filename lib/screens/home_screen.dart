@@ -49,7 +49,7 @@ class HomeScreen extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.network(
-                    product.imageUrl.first,
+                   product.imageUrl,
                     height: 200,
                     width: double.infinity,
                     fit: BoxFit.cover,
