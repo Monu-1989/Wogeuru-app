@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/product_model.dart';
+import 'product_detail_screen.dart';
 
 List<Product> mockProducts = [
   Product(
@@ -107,28 +108,28 @@ class HomeScreen extends StatelessWidget {
 
               // Emotional Full-Width Button
               SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: Show product details or share
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple[700], // Maroon tone
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                  child: const Text(
-                    "Show Your Creation 💖",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-              ),
-            ],
-          ),
+  width: double.infinity,
+  child: ElevatedButton(
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ProductDetailScreen(product: product),
         ),
       );
     },
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.deepPurple[700], // Maroon tone
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 12),
+    ),
+    child: const Text(
+      "Show Your Creation 💖",
+      style: TextStyle(fontSize: 16),
+    ),
   ),
+),
+              
 ),
