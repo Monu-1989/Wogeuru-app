@@ -61,35 +61,60 @@ class _ProductUploadScreenState extends State<ProductUploadScreen> {
   String generateSEODescription(String description) {
     return '$description. Buy directly from verified local artisans on WOGEURU.';
   }
-
   void _submitProduct() {
-    if (_formKey.currentState!.validate()) {
-      if (_selectedCategory == null || _selectedSubCategory == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select category and subcategory')),
-        );
-        return;
-      }
+  // Basic field validations
+  if (_titleController.text.isEmpty ||
+      _descriptionController.text.isEmpty ||
+      _priceController.text.isEmpty ||
+      _quantityController.text.isEmpty ||
+      selectedCategory == null ||
+      selectedSubCategory == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Please fill all required fields")),
+    );
+    return;
+  }
 
-      if (_productImages.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please upload at least 1 image')),
-        );
-        return;
-      }
+  // At least 1 image required
+  if (_imageFiles.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Please upload at least one product image")),
+    );
+    return;
+  }
 
-      final productData = {
-        'title': _titleController.text.trim(),
-        'description': _descriptionController.text.trim(),
-        'price': _priceController.text.trim(),
-        'quantity': _quantityController.text.trim(),
-        'category': _selectedCategory,
-        'subcategory': _selectedSubCategory,
-        'tags': _selectedTags,
-        'seo_tags': _seoTagsController.text.trim(),
-        'seo_description': _seoDescriptionController.text.trim(),
-        'images': _productImages.map((img) => img.path).toList(),
-        'video': _productVideo?.path ?? '',
+  // Simulate backend save (you can replace this with real API later)
+  print("📦 Uploading Product...");
+  print("Title: ${_titleController.text}");
+  print("Description: ${_descriptionController.text}");
+  print("Price: ₹${_priceController.text}");
+  print("Quantity: ${_quantityController.text}");
+  print("Category: $selectedCategory");
+  print("Subcategory: $selectedSubCategory");
+  print("Tags: $_selectedTags");
+  print("Images: ${_imageFiles.length}");
+  print("Video: ${_videoFile != null ? 'Yes' : 'No'}");
+
+  // Show success feedback
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text("Your product has been submitted 🎉")),
+  );
+
+  // Clear form (optional)
+  _titleController.clear();
+  _descriptionController.clear();
+  _priceController.clear();
+  _quantityController.clear();
+  setState(() {
+    selectedCategory = null;
+    selectedSubCategory = null;
+    _selectedTags.clear();
+    _imageFiles.clear();
+    _videoFile = null;
+  });
+}
+
+  
       };
 
       print("Product Submitted:\n$productData");
