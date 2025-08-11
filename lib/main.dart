@@ -1,7 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'theme/wogeuru_theme.dart';
-import 'screens/login_screen.dart';
+import 'screens/splash_screen.dart';
 
 void main() {
   runApp(const WogeuruApp());
@@ -16,17 +15,23 @@ class WogeuruApp extends StatelessWidget {
       title: 'WOGEURU',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        useMaterial3: true,
+        useMaterial3: false,
         scaffoldBackgroundColor: AppColors.creamBackground,
         appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.white,
-          foregroundColor: AppColors.primaryMaroon,
-          elevation: 0,
+          backgroundColor: AppColors.primaryMaroon,
+          foregroundColor: AppColors.lightGoldCream,
           centerTitle: true,
+          elevation: 0,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: AppButtonStyles.primaryButton,
         ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: AppColors.primaryMaroon,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: AppColors.gold),
         textTheme: const TextTheme(
           bodyLarge: TextStyle(color: Colors.black87),
           bodyMedium: TextStyle(color: Colors.black87),
@@ -41,7 +46,7 @@ class WogeuruApp extends StatelessWidget {
   }
 }
 
-/// Small handoff screen after native splash fades
+/// Fade transition screen from splash to login
 class BrandSplashToLogin extends StatefulWidget {
   const BrandSplashToLogin({super.key});
 
@@ -56,7 +61,7 @@ class _BrandSplashToLoginState extends State<BrandSplashToLogin> {
     Future.delayed(const Duration(milliseconds: 1200), () {
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        MaterialPageRoute(builder: (_) => const SplashScreen()),
       );
     });
   }
